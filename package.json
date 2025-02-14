@@ -1,0 +1,8 @@
+{
+  "name": "myage-web-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/sanghyun1128/myage-web-extension.git",
+  "author": "sanghyun1128 <sanghyun1128@gmail.com>",
+  "license": "MIT"
+}
