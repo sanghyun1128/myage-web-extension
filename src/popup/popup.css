@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'NanumBarunpenR';
+  src: url('../fonts/NanumBarunpenR.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   width: 300px;
   height: 160px;
@@ -7,6 +14,7 @@ body {
   margin-right: 0px;
   border: none;
   background-color: #181C14;
+  font-family: 'NanumBarunpenR', sans-serif;
 }
 
 #main {
@@ -14,7 +22,7 @@ body {
   height: 100%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   justify-items: center;
   align-items: center;
 }
@@ -81,4 +89,24 @@ body {
 
 #datePicker {
   grid-column: 2 / 5;
+}
+
+.infoLabel {
+  color: #ECDFCC;
+  font-size: 15px;
+}
+
+#result_1 {
+  grid-row: 2 / 3;
+  grid-column: 1 / 6;
+}
+
+#result_2 {
+  grid-row: 3 / 4;
+  grid-column: 1 / 6;
+}
+
+#result_3 {
+  grid-row: 4 / 5;
+  grid-column: 1 / 6;
 }
