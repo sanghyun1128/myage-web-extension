@@ -1,13 +1,23 @@
 window.onload = () => {
   showMain();
+  const settingButton = document.getElementById('settingButton');
+  const backButton = document.getElementById('backButton');
+  
+  if (settingButton) {
+    settingButton.onclick = showSetting;
+  }
+
+  if (backButton) {
+    backButton.onclick = showMain;
+  }
 }
 
-const showSettings = () => {
+const showSetting = () => {
   const mainDiv = document.getElementById('main');
-  const settingsDiv = document.getElementById('setting');
+  const settingDiv = document.getElementById('setting');
 
   mainDiv.style.display = 'none';
-  settingsDiv.style.display = 'grid';
+  settingDiv.style.display = 'grid';
 }
 
 const showMain = () => {
