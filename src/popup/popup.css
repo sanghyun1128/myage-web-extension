@@ -107,17 +107,17 @@ body {
 }
 
 #resultLabel1 {
-  grid-row: 2 / 3;
+  grid-row: 2 / 4;
   grid-column: 1 / 6;
 }
 
 #resultLabel2 {
-  grid-row: 3 / 4;
+  grid-row: 3 / 5;
   grid-column: 1 / 6;
 }
 
 #resultLabel3 {
-  grid-row: 4 / 5;
+  grid-row: 4 / 6;
   grid-column: 1 / 6;
 }
 
@@ -148,9 +148,19 @@ body {
   grid-column: 3 / 6;
 }
 
-#examPicker {
+#examInput {
   grid-row: 3 / 4;
   grid-column: 3 / 6;
+  padding: 5px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #555;
+  outline: none;
+}
+
+#examInput:focus {
+  border-color: #007bff;
 }
 
 #armyPicker {
