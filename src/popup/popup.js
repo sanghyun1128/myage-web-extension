@@ -41,13 +41,15 @@ window.onload = () => {
 
       if (data.birth === '') {
         setDefault('설정을 완료해주세요.');
+      } else {
+        setDefault('');
       }
     });
 
     birthPicker.onchange = (event) => {
       chrome.storage.sync.set({ birth: event.target.value });
       birth = event.target.value;
-      setDefault('날짜를 선택해주세요.');
+      setDefault('');
       datePicker.value = '';
     };
   }
