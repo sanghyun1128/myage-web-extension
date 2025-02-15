@@ -32,7 +32,7 @@ body {
   height: 100%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   justify-items: center;
   align-items: center;
 }
@@ -55,36 +55,39 @@ body {
   height: 30px;
   width: 30px;
   border: none;
-  background: #3C3D37;
+  background: #697565;
   border-radius: 20px;
   cursor: pointer;
   -webkit-transition: all 0.4s ease-in-out;
   transition: all 0.4s ease-in-out;
 }
 
+.button:hover {
+  background: #ECDFCC;
+}
+
 .button img {
   width: 100%;
-  height: 25px;
 }
 
 #settingButton {
   grid-column: 1 / 2;
 }
 
-#settingButton:hover {
-  background: #697565;
-}
-
 #settingButton:hover img {
   animation: spin 2s linear infinite;
+}
+
+#backButton {
+  grid-column: 1 / 2;
 }
 
 #calcButton {
   grid-column: 5 / 6;
 }
 
-#calcButton:hover {
-  background: #ffe082;
+#calcButton img {
+  width: 95%;
 }
 
 #datePicker {
