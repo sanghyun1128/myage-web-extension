@@ -4,5 +4,11 @@
   "main": "index.js",
   "repository": "https://github.com/sanghyun1128/myage-web-extension.git",
   "author": "sanghyun1128 <sanghyun1128@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\""
+  },
+  "dependencies": {
+    "prettier": "^3.5.1"
+  }
 }
