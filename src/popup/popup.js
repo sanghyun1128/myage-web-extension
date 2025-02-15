@@ -27,22 +27,28 @@ window.onload = () => {
     backButton.onclick = showMain;
   }
 
-  if (calcButton) {
+  if (calcButton && datePicker) {
     calcButton.onclick = () => {
       const targetDate = datePicker.value;
       showResult(targetDate, birth, exam, army, fast);
     };
   }
 
-  if (birthPicker) {
+  if (birthPicker && datePicker) {
     chrome.storage.sync.get('birth', (data) => {
       birthPicker.value = data.birth;
       birth = data.birth;
+
+      if (data.birth === '') {
+        setDefault('설정을 완료해주세요.');
+      }
     });
 
     birthPicker.onchange = (event) => {
       chrome.storage.sync.set({ birth: event.target.value });
       birth = event.target.value;
+      setDefault('날짜를 선택해주세요.');
+      datePicker.value = '';
     };
   }
 
@@ -103,14 +109,6 @@ window.onload = () => {
         fastCheckBox.checked = changes.fast.newValue;
         fast = changes.fast.newValue;
       }
-    }
-  });
-
-  chrome.storage.sync.get('birth', (data) => {
-    if (data.birth === '') {
-      setDefault('설정을 완료해주세요.');
-    } else {
-      setDefault('날짜를 선택해주세요.');
     }
   });
 };
