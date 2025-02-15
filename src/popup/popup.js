@@ -81,6 +81,38 @@ window.onload = () => {
       fast = event.target.checked;
     };
   }
+
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'sync') {
+      if (changes.birth) {
+        birthPicker.value = changes.birth.newValue;
+        birth = changes.birth.newValue;
+      }
+
+      if (changes.exam) {
+        examInput.value = changes.exam.newValue;
+        exam = changes.exam.newValue;
+      }
+
+      if (changes.army) {
+        armyPicker.value = changes.army.newValue;
+        army = changes.army.newValue;
+      }
+
+      if (changes.fast) {
+        fastCheckBox.checked = changes.fast.newValue;
+        fast = changes.fast.newValue;
+      }
+    }
+  });
+
+  chrome.storage.sync.get('birth', (data) => {
+    if (data.birth === '') {
+      setDefault('설정을 완료해주세요.');
+    } else {
+      setDefault('날짜를 선택해주세요.');
+    }
+  });
 };
 
 const showSetting = () => {
@@ -154,4 +186,14 @@ const showResult = (targetDate, birth, exam, army, fast) => {
   } else {
     resultLabel3.innerText = `${whichSchool(koreanAge)} 인 해 입니다.`;
   }
+};
+
+const setDefault = (message) => {
+  const resultLabel1 = document.getElementById('resultLabel1');
+  const resultLabel2 = document.getElementById('resultLabel2');
+  const resultLabel3 = document.getElementById('resultLabel3');
+
+  resultLabel1.innerText = '';
+  resultLabel2.innerText = message;
+  resultLabel3.innerText = '';
 };
