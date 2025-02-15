@@ -8,7 +8,8 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
-    "format": "prettier --write \"src/**/*.{js,html,css}\" \"test/**/*.{js,html,css}\""
+    "format": "prettier --write \"src/**/*.{js,html,css}\" \"test/**/*.{js,html,css}\"",
+    "zip": "mkdir -p versions && zip -r versions/$npm_package_version.zip manifest.json dist node_modules src"
   },
   "dependencies": {
     "moment": "^2.30.1",
