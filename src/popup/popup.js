@@ -41,8 +41,8 @@ window.onload = () => {
     });
 
     birthPicker.onchange = (event) => {
-      const birth = event.target.value;
-      chrome.storage.sync.set({ birth });
+      chrome.storage.sync.set({ birth: event.target.value });
+      birth = event.target.value;
     };
   }
 
@@ -53,8 +53,8 @@ window.onload = () => {
     });
 
     examInput.onchange = (event) => {
-      const exam = event.target.value;
-      chrome.storage.sync.set({ exam });
+      chrome.storage.sync.set({ exam: event.target.value });
+      exam = event.target.value;
     };
   }
 
@@ -65,8 +65,8 @@ window.onload = () => {
     });
 
     armyPicker.onchange = (event) => {
-      const army = event.target.value;
-      chrome.storage.sync.set({ army });
+      chrome.storage.sync.set({ army: event.target.value });
+      army = event.target.value;
     };
   }
 
@@ -77,8 +77,8 @@ window.onload = () => {
     });
 
     fastCheckBox.onchange = (event) => {
-      const fast = event.target.checked;
-      chrome.storage.sync.set({ fast });
+      chrome.storage.sync.set({ fast: event.target.checked });
+      fast = event.target.checked;
     };
   }
 };
