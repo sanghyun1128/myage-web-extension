@@ -6,7 +6,7 @@
   "author": "sanghyun1128 <sanghyun1128@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\""
+    "format": "prettier --write \"src/**/*.{js,html,css}\" \"test/**/*.{js,html,css}\""
   },
   "dependencies": {
     "prettier": "^3.5.1"
