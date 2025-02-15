@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "my age",
-  "description": "Age calculator",
+  "name": "나이 계산기",
+  "description": "사용자의 생일과 원하는 날짜를 입력하면 나이를 계산해주는 확장 프로그램",
   "version": "1.0.0",
   "action": {
     "default_popup": "/src/popup/popup.html",
