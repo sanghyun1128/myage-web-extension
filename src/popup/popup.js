@@ -6,7 +6,7 @@ window.onload = () => {
   const settingButton = document.getElementById('settingButton');
   const backButton = document.getElementById('backButton');
 
-  const datePicker = document.getElementById('datePicker');
+  const targetDatePicker = document.getElementById('targetDatePicker');
   const calcButton = document.getElementById('calcButton');
 
   const birthPicker = document.getElementById('birthPicker');
@@ -27,14 +27,14 @@ window.onload = () => {
     backButton.onclick = showMain;
   }
 
-  if (calcButton && datePicker) {
+  if (calcButton && targetDatePicker) {
     calcButton.onclick = () => {
-      const targetDate = datePicker.value;
+      const targetDate = targetDatePicker.value;
       showResult(targetDate, birth, exam, army, fast);
     };
   }
 
-  if (birthPicker && datePicker) {
+  if (birthPicker && targetDatePicker) {
     chrome.storage.sync.get('birth', (data) => {
       birthPicker.value = data.birth;
       birth = data.birth;
@@ -50,7 +50,7 @@ window.onload = () => {
       chrome.storage.sync.set({ birth: event.target.value });
       birth = event.target.value;
       setDefault('');
-      datePicker.value = '';
+      targetDatePicker.value = '';
     };
   }
 
