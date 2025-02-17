@@ -30,7 +30,14 @@ window.onload = () => {
   if (calcButton && targetDatePicker) {
     calcButton.onclick = () => {
       const targetDate = targetDatePicker.value;
-      showResult(targetDate, birth, exam, army, fast);
+
+      if (birth === '') {
+        setDefault('설정을 완료해주세요.');
+      } else if (targetDate === '') {
+        setDefault('날짜를 선택해주세요.');
+      } else {
+        showResult(targetDate, birth, exam, army, fast);
+      }
     };
   }
 
