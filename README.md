@@ -1,6 +1,23 @@
+<div align=center>
+  
 # 나이 계산기
 
-나이 계산기는 사용자의 생일과 원하는 날짜를 입력하면 만 나이와 한국 나이를 계산해주는 Chrome 확장 프로그램입니다.
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white" />
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
+
+<img src="https://img.shields.io/badge/WEBPACK-1572B6?style=for-the-badge&logo=webpack&logoColor=white" />
+<img src="https://img.shields.io/badge/prettier-1572B6?style=for-the-badge&logo=prettier&logoColor=white" />
+
+</div>
+
+사용자의 생일과 원하는 날짜를 입력하면 만 나이와 한국 나이를 계산해주는 Chrome 확장 프로그램입니다.
+
+<div align=center>
+  <a href="" target="_blank">
+    <img src="https://img.shields.io/badge/Download-D14836?style=for-the-badge&logoColor=white" />
+  </a>
+</div>
 
 ## 특징
 
@@ -51,8 +68,6 @@
 
 ## 사용법
 
-1. xxx 통해 다운로드 합니다
+1.  브라우저 툴바에서 확장 프로그램 아이콘을 클릭하여 팝업 창을 엽니다. (단축키 등록 추천)
 
-2. 브라우저 툴바에서 확장 프로그램 아이콘을 클릭하여 팝업 창을 엽니다.
-
-3. 팝업 내에서 생일과 기타 설정 값을 입력한 후, 원하는 날짜를 선택하여 계산 버튼을 누르면 만 나이와 한국 나이, 그리고 학교/군대 관련 정보를 확인할 수 있습니다.
+2.  팝업 내에서 생일과 기타 설정 값을 입력한 후, 원하는 날짜를 선택하여 계산 버튼을 누르면 만 나이와 한국 나이, 그리고 학교/군대 관련 정보를 확인할 수 있습니다.
