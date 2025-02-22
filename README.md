@@ -14,7 +14,7 @@
 사용자의 생일과 원하는 날짜를 입력하면 만 나이와 한국 나이를 계산해주는 Chrome 확장 프로그램입니다.
 
 <div align=center>
-  <a href="" target="_blank">
+  <a href="https://chromewebstore.google.com/detail/%EB%82%98%EC%9D%B4-%EA%B3%84%EC%82%B0%EA%B8%B0/ddnmiejlpkabjlbbakmlgljdinniedmm?authuser=0&hl=ko" target="_blank">
     <img src="https://img.shields.io/badge/Download-D14836?style=for-the-badge&logoColor=white" />
   </a>
 </div>
