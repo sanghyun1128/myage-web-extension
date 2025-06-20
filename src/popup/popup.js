@@ -15,9 +15,31 @@ window.onload = () => {
   const fastCheckBox = document.getElementById('fastCheckBox');
 
   let birth = '';
-  let exam = 0;
+  let exam = '0';
   let army = '';
   let fast = false;
+  let isDataLoaded = false;
+  let isUpdatingFromStorage = false;
+
+  chrome.storage.sync.get(['birth', 'exam', 'army', 'fast'], (data) => {
+    birth = data.birth || '';
+    exam = data.exam || '0';
+    army = data.army || '';
+    fast = data.fast || false;
+
+    if (birthPicker) birthPicker.value = birth;
+    if (examInput) examInput.value = exam;
+    if (armyPicker) armyPicker.value = army;
+    if (fastCheckBox) fastCheckBox.checked = fast;
+
+    isDataLoaded = true;
+
+    if (birth === '') {
+      setDefault('설정을 완료해주세요.');
+    } else {
+      setDefault('');
+    }
+  });
 
   if (settingButton) {
     settingButton.onclick = showSetting;
@@ -31,6 +53,11 @@ window.onload = () => {
     calcButton.onclick = () => {
       const targetDate = targetDatePicker.value;
 
+      if (!isDataLoaded) {
+        setDefault('데이터를 불러오는 중입니다...');
+        return;
+      }
+
       if (birth === '') {
         setDefault('설정을 완료해주세요.');
       } else if (targetDate === '') {
@@ -42,18 +69,9 @@ window.onload = () => {
   }
 
   if (birthPicker && targetDatePicker) {
-    chrome.storage.sync.get('birth', (data) => {
-      birthPicker.value = data.birth;
-      birth = data.birth;
-
-      if (data.birth === '') {
-        setDefault('설정을 완료해주세요.');
-      } else {
-        setDefault('');
-      }
-    });
-
     birthPicker.onchange = (event) => {
+      if (isUpdatingFromStorage) return;
+
       chrome.storage.sync.set({ birth: event.target.value });
       birth = event.target.value;
       setDefault('');
@@ -62,36 +80,27 @@ window.onload = () => {
   }
 
   if (examInput) {
-    chrome.storage.sync.get('exam', (data) => {
-      examInput.value = data.exam;
-      exam = data.exam;
-    });
-
     examInput.onchange = (event) => {
+      if (isUpdatingFromStorage) return;
+
       chrome.storage.sync.set({ exam: event.target.value });
       exam = event.target.value;
     };
   }
 
   if (armyPicker) {
-    chrome.storage.sync.get('army', (data) => {
-      armyPicker.value = data.army;
-      army = data.army;
-    });
-
     armyPicker.onchange = (event) => {
+      if (isUpdatingFromStorage) return;
+
       chrome.storage.sync.set({ army: event.target.value });
       army = event.target.value;
     };
   }
 
   if (fastCheckBox) {
-    chrome.storage.sync.get('fast', (data) => {
-      fastCheckBox.checked = data.fast;
-      fast = data.fast;
-    });
-
     fastCheckBox.onchange = (event) => {
+      if (isUpdatingFromStorage) return;
+
       chrome.storage.sync.set({ fast: event.target.checked });
       fast = event.target.checked;
     };
@@ -99,25 +108,31 @@ window.onload = () => {
 
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync') {
-      if (changes.birth) {
+      isUpdatingFromStorage = true;
+
+      if (changes.birth && birthPicker) {
         birthPicker.value = changes.birth.newValue;
         birth = changes.birth.newValue;
       }
 
-      if (changes.exam) {
+      if (changes.exam && examInput) {
         examInput.value = changes.exam.newValue;
         exam = changes.exam.newValue;
       }
 
-      if (changes.army) {
+      if (changes.army && armyPicker) {
         armyPicker.value = changes.army.newValue;
         army = changes.army.newValue;
       }
 
-      if (changes.fast) {
+      if (changes.fast && fastCheckBox) {
         fastCheckBox.checked = changes.fast.newValue;
         fast = changes.fast.newValue;
       }
+
+      setTimeout(() => {
+        isUpdatingFromStorage = false;
+      }, 0);
     }
   });
 };
