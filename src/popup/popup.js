@@ -1,254 +1,336 @@
 import moment from 'moment';
 
-// Initialize the popup when the window loads
+/**
+ * DOM Elements
+ */
+const getDOMElements = () => ({
+  // Navigation elements
+  settingButton: document.getElementById('settingButton'),
+  backButton: document.getElementById('backButton'),
+
+  // Main page elements
+  targetDatePicker: document.getElementById('targetDatePicker'),
+  calcButton: document.getElementById('calcButton'),
+
+  // Settings page elements
+  birthPicker: document.getElementById('birthPicker'),
+  examInput: document.getElementById('examInput'),
+  armyPicker: document.getElementById('armyPicker'),
+  fastCheckBox: document.getElementById('fastCheckBox'),
+
+  // Result elements
+  resultLabel1: document.getElementById('resultLabel1'),
+  resultLabel2: document.getElementById('resultLabel2'),
+  resultLabel3: document.getElementById('resultLabel3'),
+
+  // Layout elements
+  mainDiv: document.getElementById('main'),
+  settingDiv: document.getElementById('setting'),
+});
+
+/**
+ * Application State
+ */
+const createAppState = () => ({
+  birth: '',
+  exam: '0',
+  army: '',
+  fast: false,
+  isDataLoaded: false,
+  isUpdatingFromStorage: false,
+});
+
+/**
+ * Initialize the popup when the window loads
+ */
 window.onload = () => {
+  const elements = getDOMElements();
+  const state = createAppState();
+
   showMain();
+  loadUserData(state, elements);
+  setupEventHandlers(state, elements);
+};
 
-  // Get DOM elements
-  const settingButton = document.getElementById('settingButton');
-  const backButton = document.getElementById('backButton');
-
-  const targetDatePicker = document.getElementById('targetDatePicker');
-  const calcButton = document.getElementById('calcButton');
-
-  const birthPicker = document.getElementById('birthPicker');
-  const examInput = document.getElementById('examInput');
-  const armyPicker = document.getElementById('armyPicker');
-  const fastCheckBox = document.getElementById('fastCheckBox');
-
-  // Initialize user data variables
-  let birth = '';
-  let exam = '0';
-  let army = '';
-  let fast = false;
-  let isDataLoaded = false;
-  let isUpdatingFromStorage = false;
-
-  // Load user data from Chrome storage
+/**
+ * Load user data from Chrome storage
+ */
+const loadUserData = (state, elements) => {
   chrome.storage.sync.get(['birth', 'exam', 'army', 'fast'], (data) => {
-    birth = data.birth || '';
-    exam = data.exam || '0';
-    army = data.army || '';
-    fast = data.fast || false;
+    // Update state
+    state.birth = data.birth || '';
+    state.exam = data.exam || '0';
+    state.army = data.army || '';
+    state.fast = data.fast || false;
 
     // Update form elements with stored data
-    if (birthPicker) birthPicker.value = birth;
-    if (examInput) examInput.value = exam;
-    if (armyPicker) armyPicker.value = army;
-    if (fastCheckBox) fastCheckBox.checked = fast;
+    updateFormElements(state, elements);
 
-    isDataLoaded = true;
+    state.isDataLoaded = true;
 
     // Set default message based on birth data
-    if (birth === '') {
+    if (state.birth === '') {
       setDefault('설정을 완료해주세요.');
     } else {
       setDefault('');
     }
   });
+};
 
-  // Set up setting button click handler
-  if (settingButton) {
-    settingButton.onclick = showSetting;
+/**
+ * Update form elements with current state
+ */
+const updateFormElements = (state, elements) => {
+  if (elements.birthPicker) elements.birthPicker.value = state.birth;
+  if (elements.examInput) elements.examInput.value = state.exam;
+  if (elements.armyPicker) elements.armyPicker.value = state.army;
+  if (elements.fastCheckBox) elements.fastCheckBox.checked = state.fast;
+};
+
+/**
+ * Setup all event handlers
+ */
+const setupEventHandlers = (state, elements) => {
+  setupNavigationHandlers(elements);
+  setupCalculationHandler(state, elements);
+  setupFormHandlers(state, elements);
+  setupStorageChangeListener(state, elements);
+};
+
+/**
+ * Setup navigation event handlers
+ */
+const setupNavigationHandlers = (elements) => {
+  if (elements.settingButton) {
+    elements.settingButton.onclick = showSetting;
   }
 
-  // Set up back button click handler
-  if (backButton) {
-    backButton.onclick = showMain;
+  if (elements.backButton) {
+    elements.backButton.onclick = showMain;
   }
+};
 
-  // Set up calculate button click handler
-  if (calcButton && targetDatePicker) {
-    calcButton.onclick = () => {
-      const targetDate = targetDatePicker.value;
+/**
+ * Setup calculation button handler
+ */
+const setupCalculationHandler = (state, elements) => {
+  if (elements.calcButton && elements.targetDatePicker) {
+    elements.calcButton.onclick = () => {
+      const targetDate = elements.targetDatePicker.value;
 
       // Check if data is loaded
-      if (!isDataLoaded) {
+      if (!state.isDataLoaded) {
         setDefault('데이터를 불러오는 중입니다...');
         return;
       }
 
       // Validate required data
-      if (birth === '') {
+      if (state.birth === '') {
         setDefault('설정을 완료해주세요.');
       } else if (targetDate === '') {
         setDefault('날짜를 선택해주세요.');
       } else {
-        showResult(targetDate, birth, exam, army, fast);
+        showResult(targetDate, state);
       }
     };
   }
+};
 
-  // Set up birth date picker change handler
-  if (birthPicker && targetDatePicker) {
-    birthPicker.onchange = (event) => {
-      if (isUpdatingFromStorage) return;
+/**
+ * Setup form change handlers
+ */
+const setupFormHandlers = (state, elements) => {
+  const createOnChangeHandler = (storageKey, updateStateValue, additionalCallback) => {
+    return (event) => {
+      if (state.isUpdatingFromStorage) return;
 
-      // Save birth date to storage and update local variable
-      chrome.storage.sync.set({ birth: event.target.value });
-      birth = event.target.value;
-      setDefault('');
-      targetDatePicker.value = '';
+      const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+
+      // Save to storage and update state
+      chrome.storage.sync.set({ [storageKey]: value });
+      updateStateValue(value);
+
+      // Execute additional callback if provided
+      if (additionalCallback) {
+        additionalCallback();
+      }
     };
+  };
+
+  // Birth date picker
+  if (elements.birthPicker && elements.targetDatePicker) {
+    elements.birthPicker.onchange = createOnChangeHandler(
+      'birth',
+      (value) => {
+        state.birth = value;
+      },
+      () => {
+        setDefault('');
+        elements.targetDatePicker.value = '';
+      },
+    );
   }
 
-  // Set up exam years input change handler
-  if (examInput) {
-    examInput.onchange = (event) => {
-      if (isUpdatingFromStorage) return;
-
-      // Save exam years to storage and update local variable
-      chrome.storage.sync.set({ exam: event.target.value });
-      exam = event.target.value;
-    };
+  // Exam years input
+  if (elements.examInput) {
+    elements.examInput.onchange = createOnChangeHandler('exam', (value) => {
+      state.exam = value;
+    });
   }
 
-  // Set up army service date picker change handler
-  if (armyPicker) {
-    armyPicker.onchange = (event) => {
-      if (isUpdatingFromStorage) return;
-
-      // Save army service date to storage and update local variable
-      chrome.storage.sync.set({ army: event.target.value });
-      army = event.target.value;
-    };
+  // Army service date picker
+  if (elements.armyPicker) {
+    elements.armyPicker.onchange = createOnChangeHandler('army', (value) => {
+      state.army = value;
+    });
   }
 
-  // Set up fast track checkbox change handler
-  if (fastCheckBox) {
-    fastCheckBox.onchange = (event) => {
-      if (isUpdatingFromStorage) return;
-
-      // Save fast track option to storage and update local variable
-      chrome.storage.sync.set({ fast: event.target.checked });
-      fast = event.target.checked;
-    };
+  // Fast track checkbox
+  if (elements.fastCheckBox) {
+    elements.fastCheckBox.onchange = createOnChangeHandler('fast', (value) => {
+      state.fast = value;
+    });
   }
+};
 
-  // Listen for storage changes to sync across tabs/windows
+/**
+ * Setup storage change listener for syncing across tabs/windows
+ */
+const setupStorageChangeListener = (state, elements) => {
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync') {
-      isUpdatingFromStorage = true;
+      state.isUpdatingFromStorage = true;
 
       // Update form elements when storage changes
-      if (changes.birth && birthPicker) {
-        birthPicker.value = changes.birth.newValue;
-        birth = changes.birth.newValue;
+      if (changes.birth && elements.birthPicker) {
+        elements.birthPicker.value = changes.birth.newValue;
+        state.birth = changes.birth.newValue;
       }
 
-      if (changes.exam && examInput) {
-        examInput.value = changes.exam.newValue;
-        exam = changes.exam.newValue;
+      if (changes.exam && elements.examInput) {
+        elements.examInput.value = changes.exam.newValue;
+        state.exam = changes.exam.newValue;
       }
 
-      if (changes.army && armyPicker) {
-        armyPicker.value = changes.army.newValue;
-        army = changes.army.newValue;
+      if (changes.army && elements.armyPicker) {
+        elements.armyPicker.value = changes.army.newValue;
+        state.army = changes.army.newValue;
       }
 
-      if (changes.fast && fastCheckBox) {
-        fastCheckBox.checked = changes.fast.newValue;
-        fast = changes.fast.newValue;
+      if (changes.fast && elements.fastCheckBox) {
+        elements.fastCheckBox.checked = changes.fast.newValue;
+        state.fast = changes.fast.newValue;
       }
 
       // Reset the updating flag after next tick
       setTimeout(() => {
-        isUpdatingFromStorage = false;
+        state.isUpdatingFromStorage = false;
       }, 0);
     }
   });
 };
 
-// Show the settings page
-const showSetting = () => {
-  const mainDiv = document.getElementById('main');
-  const settingDiv = document.getElementById('setting');
+/**
+ * Page Navigation Functions
+ */
 
-  mainDiv.style.display = 'none';
-  settingDiv.style.display = 'grid';
-};
-
-// Show the main page
+/**
+ * Show the main page
+ */
 const showMain = () => {
-  const mainDiv = document.getElementById('main');
-  const settingsDiv = document.getElementById('setting');
-
-  mainDiv.style.display = 'grid';
-  settingsDiv.style.display = 'none';
+  const elements = getDOMElements();
+  elements.mainDiv.style.display = 'grid';
+  elements.settingDiv.style.display = 'none';
 };
 
-// Calculate and display the result based on target date and user data
-const showResult = (targetDate, birth, exam, army, fast) => {
-  exam = Number(exam);
+/**
+ * Show the settings page
+ */
+const showSetting = () => {
+  const elements = getDOMElements();
+  elements.mainDiv.style.display = 'none';
+  elements.settingDiv.style.display = 'grid';
+};
 
-  // Get result display elements
-  const resultLabel1 = document.getElementById('resultLabel1');
-  const resultLabel2 = document.getElementById('resultLabel2');
-  const resultLabel3 = document.getElementById('resultLabel3');
+/**
+ * Calculation and Display Functions
+ */
+
+/**
+ * Calculate and display the result based on target date and user data
+ */
+const showResult = (targetDate, state) => {
+  const { birth, exam, army, fast } = state;
+  const examYears = Number(exam);
+
+  const elements = getDOMElements();
 
   // Calculate ages
   const newAge = moment(targetDate).diff(moment(birth), 'years');
   const koreanAge = targetDate.split('-')[0] - birth.split('-')[0] + 1;
 
   // Determine army service status
-  const haveToGoArmy = army === '' ? false : true;
+  const haveToGoArmy = army !== '';
   const isBeforeArmy = moment(targetDate).isBefore(army);
   const isInArmy = moment(targetDate).isBetween(army, moment(army).add(21, 'months'));
 
-  // Determine school level or life stage based on Korean age
-  const whichSchool = (age) => {
-    if (fast) age += 1; // Adjust for fast track
-    const durationOfUniv = haveToGoArmy ? 6 : 4; // University duration based on military service
-
-    if (age < 8) {
-      return '어린이';
-    } else if (age < 14) {
-      const grade = age - 7;
-      return `초등학교 ${grade}학년`;
-    } else if (age < 17) {
-      const grade = age - 13;
-      return `중학교 ${grade}학년`;
-    } else if (age < 20) {
-      const grade = age - 16;
-      return `고등학교 ${grade}학년`;
-    } else if (age < 20 + exam) {
-      return `재수생 ${age - 19}년차`;
-    } else if (age < 20 + exam + durationOfUniv) {
-      if (isBeforeArmy || !haveToGoArmy) {
-        return `대학교 ${age - 19 - exam}학년`;
-      } else {
-        return `대학교 ${age - 19 - exam - 2}학년`;
-      }
-    } else {
-      return `사회인 ${age - 19 - exam - durationOfUniv}년차`;
-    }
-  };
-
-  // Calculate military service duration
-  const armyInfo = (armyDate, targetDate) => {
-    const duration = moment(targetDate).diff(moment(armyDate), 'months');
-    return `군대 ${duration}달 차`;
-  };
-
   // Display the results
-  resultLabel1.innerText = `당신은 ${targetDate}에`;
-  resultLabel2.innerText = `만 ${newAge}세, 한국 나이로 ${koreanAge}세 이고`;
+  elements.resultLabel1.innerText = `당신은 ${targetDate}에`;
+  elements.resultLabel2.innerText = `만 ${newAge}세, 한국 나이로 ${koreanAge}세 이고`;
 
   // Show army status or school level
   if (army !== '' && isInArmy) {
-    resultLabel3.innerText = `${armyInfo(army, targetDate)} 입니다.`;
+    elements.resultLabel3.innerText = `${getArmyInfo(army, targetDate)} 입니다.`;
   } else {
-    resultLabel3.innerText = `${whichSchool(koreanAge)} 인 해 입니다.`;
+    elements.resultLabel3.innerText = `${getSchoolLevel(koreanAge, examYears, haveToGoArmy, isBeforeArmy, fast)} 인 해 입니다.`;
   }
 };
 
-// Set default message in result labels
-const setDefault = (message) => {
-  const resultLabel1 = document.getElementById('resultLabel1');
-  const resultLabel2 = document.getElementById('resultLabel2');
-  const resultLabel3 = document.getElementById('resultLabel3');
+/**
+ * Determine school level or life stage based on Korean age
+ */
+const getSchoolLevel = (age, examYears, haveToGoArmy, isBeforeArmy, fast) => {
+  if (fast) age += 1; // Adjust for fast track
+  const durationOfUniv = haveToGoArmy ? 6 : 4; // University duration based on military service
 
-  resultLabel1.innerText = '';
-  resultLabel2.innerText = message;
-  resultLabel3.innerText = '';
+  if (age < 8) {
+    return '어린이';
+  } else if (age < 14) {
+    const grade = age - 7;
+    return `초등학교 ${grade}학년`;
+  } else if (age < 17) {
+    const grade = age - 13;
+    return `중학교 ${grade}학년`;
+  } else if (age < 20) {
+    const grade = age - 16;
+    return `고등학교 ${grade}학년`;
+  } else if (age < 20 + examYears) {
+    return `재수생 ${age - 19}년차`;
+  } else if (age < 20 + examYears + durationOfUniv) {
+    if (isBeforeArmy || !haveToGoArmy) {
+      return `대학교 ${age - 19 - examYears}학년`;
+    } else {
+      return `대학교 ${age - 19 - examYears - 2}학년`;
+    }
+  } else {
+    return `사회인 ${age - 19 - examYears - durationOfUniv}년차`;
+  }
+};
+
+/**
+ * Calculate military service duration
+ */
+const getArmyInfo = (armyDate, targetDate) => {
+  const duration = moment(targetDate).diff(moment(armyDate), 'months');
+  return `군대 ${duration}달 차`;
+};
+
+/**
+ * Set default message in result labels
+ */
+const setDefault = (message) => {
+  const elements = getDOMElements();
+  elements.resultLabel1.innerText = '';
+  elements.resultLabel2.innerText = message;
+  elements.resultLabel3.innerText = '';
 };
